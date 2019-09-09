@@ -32,7 +32,7 @@ class BurgerBuilder extends Component {
   };
 
   componentDidMount() {
-    console.log(this.props);
+    //console.log(this.props);
     this.props.onInitIngredients();
   }
 
@@ -95,7 +95,7 @@ class BurgerBuilder extends Component {
             disabled={disabledInfo}
             purchaseable={this.updatePurchaseState(this.props.ings)}
             ordered={this.purchaseHandler}
-            isAuthenticated={this.props.isAuthenticated}
+            isAuth={this.props.isAuthenticated}
             price={this.props.price}
           />
         </Aux>

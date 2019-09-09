@@ -55,13 +55,13 @@ export const auth = (email, password, isSignup) => {
         }
         axios.post(url, authData)
             .then(response => {
-                console.log('authresponse', response);
+                //console.log('authresponse', response);
                 const currDate = new Date();
-                console.log('currentdate', new Date());
-                console.log('sessionlength', response.data.expiresIn);
+                //console.log('currentdate', new Date());
+                //console.log('sessionlength', response.data.expiresIn);
                 //calculate expiration time from current date + the expiry time
                 const expirationDate = new Date(currDate.getTime() + response.data.expiresIn * 1000);
-                console.log('expirationDate', expirationDate)
+                //console.log('expirationDate', expirationDate)
                 //using localStorage so that the user doesnt get logged out when he refreshes the browser window
                 localStorage.setItem('token', response.data.idToken);
                 localStorage.setItem('expirationDate', expirationDate);
@@ -70,7 +70,7 @@ export const auth = (email, password, isSignup) => {
                 dispatch(checkAuthTimeout(response.data.expiresIn));
             })
             .catch(err => {
-                console.log(err);
+                //console.log(err);
                 dispatch(authFail(err.response.data.error));
             });
     };

@@ -8,6 +8,7 @@ import Spinner from '../../../components/UI/Spinner/Spinner';
 import Input from '../../../components/UI/Input/Input';
 import withErrorHandler from '../../../hoc/withErrorHandler/withErrorHandler';
 import * as actions from '../../../store/actions/index';
+import { updateObject, checkValidity } from '../../../shared/utility';
 
 
 class ContactData extends Component {
@@ -110,16 +111,8 @@ class ContactData extends Component {
             ingredients: this.props.ings,
             //on a real app, you should calculate price on the server
             price: this.props.price,
-            // customer: {
-            //     name: 'Lajos Fidy',
-            //     address: {
-            //         street: 'Petofi Sandor 56',
-            //         zipCide: '1956',
-            //         country: 'Hungary'
-            //     },
-            //     email: 'test@test.com',
-            // },
-            orderData: formData
+            orderData: formData,
+            userId: this.props.userId
         }
         this.props.onOrderBurger(order, this.props.token);
 
@@ -134,42 +127,19 @@ class ContactData extends Component {
         //     });
     }
 
-    checkValidity(value, rules) {
-        let isValid = true;
-
-        if (rules.required) {
-            isValid = value.trim() !== '' && isValid;
-        }
-
-        if (rules.minLength) {
-            isValid = value.length >= rules.minLength && isValid;
-        }
-
-        if (rules.maxLength) {
-            isValid = value.length <= rules.maxLength && isValid;
-        }
-
-        if (rules.isEmail) {
-            isValid = value.match(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i);
-        }
-
-        return isValid;
-    }
-
     inputChangedHandler = (event, inputIdentifier) => {
-        //console.log(event.target.value);
-        const updatedOrderForm = {
-            ...this.state.orderForm
-        }
         //going one step deeper into our element, to clone the elementType, value properties
-        const updatedFormElement = {
-            ...updatedOrderForm[inputIdentifier]
-        };
-        updatedFormElement.value = event.target.value;
-        updatedFormElement.valid = this.checkValidity(updatedFormElement.value, updatedFormElement.validation);
-        //to only mark an input area as incorrect if it has been touched
-        updatedFormElement.touched = true;
-        updatedOrderForm[inputIdentifier] = updatedFormElement;
+        const updatedFormElement = updateObject(this.state.orderForm[inputIdentifier], {
+            value: event.target.value,
+            valid: checkValidity(event.target.value, this.state.orderForm[inputIdentifier].validation),
+            //to only mark an input area as incorrect if it has been touched
+            touched: true
+        });
+
+        const updatedOrderForm = updateObject(this.state.orderForm, {
+            [inputIdentifier]: updatedFormElement
+        });
+
         console.log(updatedFormElement);
 
         //To check overall form validity (to enable/disable order button)
@@ -224,7 +194,8 @@ const mapStateToProps = state => {
         ings: state.burgerBuilder.ingredients,
         price: state.burgerBuilder.totalPrice,
         loading: state.order.loading,
-        token: state.auth.token
+        token: state.auth.token,
+        userId: state.auth.userId
     }
 };
 
